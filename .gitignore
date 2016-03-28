@@ -12,3 +12,5 @@
 *.iws
 
 target/
+
+writefile.txt
