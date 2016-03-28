@@ -14,19 +14,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WriterExample {
     private static final String FILE_NAME = "writefile.txt";
-    private static AsynchronousFileChannel outputfile;
     private static AtomicInteger fileindex = new AtomicInteger(0);
-    private static ThreadPoolExecutor pool = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>());
+    private static ThreadPoolExecutor pool =
+            new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     public static void main(String[] args) throws InterruptedException, IOException, ExecutionException {
-        outputfile = AsynchronousFileChannel.open(
+        AsynchronousFileChannel outputfile = AsynchronousFileChannel.open(
                 Paths.get(FILE_NAME),
-                new HashSet<StandardOpenOption>(Arrays.asList(StandardOpenOption.WRITE,
-                        StandardOpenOption.CREATE)), pool);
+                new HashSet<>(Arrays.asList(StandardOpenOption.WRITE, StandardOpenOption.CREATE)),
+                pool
+        );
         List<Future<Integer>> futures = new ArrayList<>();
         for (int i = 0; i < 10000; i++) {
-            futures.add(outputfile.write(ByteBuffer.wrap(("Hello"+"\n").getBytes()), fileindex.getAndIncrement() * 6));
+            futures.add(outputfile.write(ByteBuffer.wrap(("Hello" + i + "\n").getBytes()), fileindex.getAndIncrement() * 6));
         }
         outputfile.close();
         pool.shutdown();
@@ -35,7 +35,7 @@ public class WriterExample {
             try {
                 future.get();
             } catch (ExecutionException e) {
-                System.out.println("Task wasn't executed!");
+                System.out.println("Task wasn't executed! " + e.getMessage());
             }
         }
     }
