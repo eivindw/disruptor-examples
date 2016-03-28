@@ -5,3 +5,10 @@
 *~
 .classpath
 .project
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+target/
