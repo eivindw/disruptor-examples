@@ -4,15 +4,14 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Simple {
     @SuppressWarnings("unchecked")
     public static void main(String[] args) {
-        ExecutorService exec = Executors.newCachedThreadPool();
         // Preallocate RingBuffer with 1024 ValueEvents
-        Disruptor<ValueEvent> disruptor = new Disruptor<ValueEvent>(ValueEvent.EVENT_FACTORY, 1024, exec);
+        Disruptor<ValueEvent> disruptor =
+                new Disruptor<>(ValueEvent.EVENT_FACTORY, 1024, Executors.defaultThreadFactory());
         // Build dependency graph
         disruptor.handleEventsWith((event, sequence, endOfBatch) -> {
             System.out.printf(
@@ -32,6 +31,5 @@ public class Simple {
             ringBuffer.publish(seq);
         }
         disruptor.shutdown();
-        exec.shutdown();
     }
 }
